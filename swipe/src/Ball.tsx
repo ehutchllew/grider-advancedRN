@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 class Ball extends Component {
+  position: any;
   componentWillMount() {
     this.position = new Animated.ValueXY(0, 0);
     Animated.spring(this.position, {

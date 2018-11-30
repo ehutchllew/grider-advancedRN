@@ -4,7 +4,7 @@ import { View, Animated } from "react-native";
 import { DeckData } from "./models";
 
 interface Props {
-  renderCard: () => void;
+  renderCard: (item: DeckData) => Array<DeckData>;
   renderNoMoreCards: () => void;
   data: Array<DeckData>;
   onSwipeRight: () => void;
@@ -14,8 +14,15 @@ interface Props {
 class Deck extends Component<Props> {
   static defaultProps: Props;
 
+  renderCards() {
+    const { data, renderCard } = this.props;
+    return data.map(item => {
+      return renderCard(item);
+    });
+  }
+
   render() {
-    return <View />;
+    return <View>{this.renderCards()}</View>;
   }
 }
 

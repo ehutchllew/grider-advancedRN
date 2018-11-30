@@ -19,10 +19,18 @@ interface Props {
 class Deck extends Component<Props> {
   static defaultProps: Props;
   panResponder: PanResponderInstance;
+  position: Animated.AnimatedValueXY;
   constructor(props: Props) {
     super(props);
 
-    this.panResponder = PanResponder.create({});
+    this.position = new Animated.ValueXY();
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: e => true,
+      onPanResponderMove: (evt, gestureState) => {
+        this.position.setValue({ x: gestureState.dx, y: gestureState.dy });
+      },
+      onPanResponderRelease: () => {}
+    });
   }
 
   renderCards() {
@@ -33,7 +41,14 @@ class Deck extends Component<Props> {
   }
 
   render() {
-    return <View>{this.renderCards()}</View>;
+    return (
+      <Animated.View
+        style={this.position.getLayout()}
+        {...this.panResponder.panHandlers}
+      >
+        {this.renderCards()}
+      </Animated.View>
+    );
   }
 }
 

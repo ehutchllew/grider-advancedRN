@@ -1,5 +1,10 @@
 import React, { Component } from "react";
-import { View, Animated } from "react-native";
+import {
+  View,
+  Animated,
+  PanResponder,
+  PanResponderInstance
+} from "react-native";
 
 import { DeckData } from "./models";
 
@@ -13,6 +18,12 @@ interface Props {
 
 class Deck extends Component<Props> {
   static defaultProps: Props;
+  panResponder: PanResponderInstance;
+  constructor(props: Props) {
+    super(props);
+
+    this.panResponder = PanResponder.create({});
+  }
 
   renderCards() {
     const { data, renderCard } = this.props;
@@ -27,7 +38,7 @@ class Deck extends Component<Props> {
 }
 
 Deck.defaultProps = {
-  renderCard: () => {},
+  renderCard: ([]) => [],
   renderNoMoreCards: () => {},
   data: [],
   onSwipeRight: () => {},

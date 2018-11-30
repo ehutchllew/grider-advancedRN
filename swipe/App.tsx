@@ -11,12 +11,13 @@ export default class App extends React.Component {
   renderCard(item: DeckData): JSX.Element {
     const { text, uri, id } = item;
     return (
-      <Card title={text} image={{ uri }}>
+      <Card title={text} image={{ uri }} key={id}>
         <Text style={{ marginBottom: 10 }}>Customizable Text right hurr.</Text>
         <Button
           title="Press Me."
           icon={{ name: "code" }}
           backgroundColor="#03A9F4"
+          onPress={() => {}}
         />
       </Card>
     );

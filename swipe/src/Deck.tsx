@@ -25,6 +25,8 @@ class Deck extends Component<Props> {
   panResponder: PanResponderInstance;
   position: Animated.AnimatedValueXY;
   WIDTH: number;
+  SWIPE_THRESHOLD: number;
+
   constructor(props: Props) {
     super(props);
 
@@ -43,6 +45,7 @@ class Deck extends Component<Props> {
     });
 
     this.WIDTH = Dimensions.get("window").width;
+    this.SWIPE_THRESHOLD = this.WIDTH / 3;
   }
 
   getCardStyle(): any {
@@ -55,6 +58,10 @@ class Deck extends Component<Props> {
       ...position.getLayout(),
       transform: [{ rotate }]
     };
+  }
+
+  onSwipeComplete(direction: number) {
+    direction > 0 ? console.log("right") : console.log("left");
   }
 
   renderCards(): any {
@@ -79,13 +86,15 @@ class Deck extends Component<Props> {
     evt: GestureResponderEvent,
     gesture: PanResponderGestureState
   ): void {
-    if (Math.abs(gesture.dx) > 150) {
-      return Animated.spring(this.position, {
+    const gestureClone = { ...gesture };
+    if (Math.abs(gestureClone.dx) > this.SWIPE_THRESHOLD) {
+      return Animated.timing(this.position, {
         toValue: {
-          x: (this.WIDTH + 1) * (gesture.dx / Math.abs(gesture.dx)),
+          x: (this.WIDTH + 1) * (gestureClone.dx / Math.abs(gestureClone.dx)),
           y: 0
-        }
-      }).start();
+        },
+        duration: 250
+      }).start(() => this.onSwipeComplete(gestureClone.dx));
     }
     return Animated.spring(this.position, {
       toValue: { x: 0, y: 0 }

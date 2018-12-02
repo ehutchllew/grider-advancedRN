@@ -5,7 +5,6 @@ import {
   PanResponder,
   PanResponderInstance,
   Dimensions,
-  NativeScrollEvent,
   PanResponderGestureState,
   GestureResponderEvent
 } from "react-native";
@@ -16,11 +15,15 @@ interface Props {
   renderCard: (item: DeckData) => Array<DeckData>;
   renderNoMoreCards: () => void;
   data: Array<DeckData>;
-  onSwipeRight: () => void;
-  onSwipeLeft: () => void;
+  onSwipeRight: (item: DeckData) => void;
+  onSwipeLeft: (item: DeckData) => void;
 }
 
-class Deck extends Component<Props> {
+interface State {
+  index: number;
+}
+
+class Deck extends Component<Props, State> {
   static defaultProps: Props;
   panResponder: PanResponderInstance;
   position: Animated.AnimatedValueXY;
@@ -29,6 +32,10 @@ class Deck extends Component<Props> {
 
   constructor(props: Props) {
     super(props);
+
+    this.state = {
+      index: 0
+    };
 
     this.position = new Animated.ValueXY();
     this.panResponder = PanResponder.create({
@@ -60,14 +67,27 @@ class Deck extends Component<Props> {
     };
   }
 
-  onSwipeComplete(direction: number) {
-    direction > 0 ? console.log("right") : console.log("left");
+  onSwipeComplete(direction: number): void {
+    const { data, onSwipeLeft, onSwipeRight } = this.props;
+    const { index } = this.state;
+    const activeItem = data[index];
+
+    direction > 0 ? onSwipeRight(activeItem) : onSwipeLeft(activeItem);
+
+    this.position.setValue({ x: 0, y: 0 });
+    this.setState(prevState => ({
+      index: prevState.index + 1
+    }));
   }
 
   renderCards(): any {
-    const { data, renderCard } = this.props;
-    return data.map((item, index) => {
-      if (index === 0) {
+    const { data, renderCard, renderNoMoreCards } = this.props;
+
+    if (this.state.index >= data.length) return renderNoMoreCards();
+
+    return data.map((item, ind) => {
+      if (ind < this.state.index) return null;
+      if (ind === this.state.index) {
         return (
           <Animated.View
             key={item.id}

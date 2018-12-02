@@ -23,10 +23,28 @@ export default class App extends React.Component {
     );
   }
 
+  renderEmptyList() {
+    return (
+      <Card title="All Done!">
+        <Text style={{ marginBottom: 10 }}>No more profiles.</Text>
+        <Button
+          title="Get More!"
+          icon={{ name: "code" }}
+          backgroundColor="#03A9F4"
+          onPress={() => {}}
+        />
+      </Card>
+    );
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Deck data={DATA} renderCard={this.renderCard} />
+        <Deck
+          data={DATA}
+          renderCard={this.renderCard}
+          renderNoMoreCards={this.renderEmptyList}
+        />
       </View>
     );
   }

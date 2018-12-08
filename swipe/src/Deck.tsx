@@ -2,11 +2,14 @@ import React, { Component } from "react";
 import {
   View,
   Animated,
+  LayoutAnimation,
   PanResponder,
   PanResponderInstance,
   Dimensions,
   PanResponderGestureState,
-  GestureResponderEvent
+  GestureResponderEvent,
+  StyleSheet,
+  UIManager
 } from "react-native";
 
 import { DeckData } from "./models";
@@ -55,6 +58,19 @@ class Deck extends Component<Props, State> {
     this.SWIPE_THRESHOLD = this.WIDTH / 3;
   }
 
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.data !== this.props.data) {
+      this.setState({ index: 0 });
+    }
+  }
+
+  componentWillUpdate() {
+    UIManager.setLayoutAnimationEnabledExperimental &&
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+
+    LayoutAnimation.spring();
+  }
+
   getCardStyle(): any {
     const { position, WIDTH } = this;
     const rotate = position.x.interpolate({
@@ -85,21 +101,30 @@ class Deck extends Component<Props, State> {
 
     if (this.state.index >= data.length) return renderNoMoreCards();
 
-    return data.map((item, ind) => {
-      if (ind < this.state.index) return null;
-      if (ind === this.state.index) {
+    return data
+      .map((item, ind) => {
+        if (ind < this.state.index) return null;
+        if (ind === this.state.index) {
+          return (
+            <Animated.View
+              key={item.id}
+              style={[this.getCardStyle(), styles.cardStyle]}
+              {...this.panResponder.panHandlers}
+            >
+              {renderCard(item)}
+            </Animated.View>
+          );
+        }
         return (
           <Animated.View
             key={item.id}
-            style={this.getCardStyle()}
-            {...this.panResponder.panHandlers}
+            style={[styles.cardStyle, { top: 10 * (ind - this.state.index) }]}
           >
             {renderCard(item)}
           </Animated.View>
         );
-      }
-      return renderCard(item);
-    });
+      })
+      .reverse();
   }
 
   snapToPosition(
@@ -133,5 +158,12 @@ Deck.defaultProps = {
   onSwipeRight: () => {},
   onSwipeLeft: () => {}
 };
+
+const styles: any = StyleSheet.create({
+  cardStyle: {
+    position: "absolute",
+    width: Dimensions.get("window").width
+  }
+});
 
 export default Deck;

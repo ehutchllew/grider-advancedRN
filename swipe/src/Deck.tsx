@@ -16,7 +16,7 @@ import { DeckData } from "./models";
 
 interface Props {
   renderCard: (item: DeckData) => Array<DeckData>;
-  renderNoMoreCards: () => void;
+  renderNoMoreCards: () => Array<JSX.Element>;
   data: Array<DeckData>;
   onSwipeRight: (item: DeckData) => void;
   onSwipeLeft: (item: DeckData) => void;
